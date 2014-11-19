@@ -23,7 +23,7 @@ func TestFp(t *testing.T) {
 	}
 	nums = append(nums, nums2...)
 
-	for i := 0; i < 1000; i++ {
+	for i := 0; i < 5000; i++ {
 		nums = append(nums, rand.Uint32())
 	}
 
