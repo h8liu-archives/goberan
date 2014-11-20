@@ -52,7 +52,7 @@ type RISC struct {
 func NewRISC() *RISC {
 	ret := new(RISC)
 	ret.R = make([]uint32, 16)
-	ret.keyBuf = make([]uint8, 16)
+	ret.keyBuf = make([]uint8, 0, 16)
 	ret.spi = make([]RiscSPI, 4)
 	ret.RAM = make([]uint32, MemWords)
 	ret.ROM = make([]uint32, ROMWords)
@@ -385,6 +385,42 @@ func (r *RISC) loadIO(address uint32) uint32 {
 
 func (r *RISC) storeIO(address uint32, value uint32) {
 	panic("todo")
+}
+
+func (r *RISC) setTime(tick uint32) {
+	r.currentTick = tick
+}
+
+func (r *RISC) mouseMoved(mouseX, mouseY uint32) {
+	if mouseX >= 0 && mouseX < 4096 {
+		r.mouse = (r.mouse & ^uint32(0x00000fff)) | mouseX
+	}
+	if mouseY >= 0 && mouseY < 4096 {
+		r.mouse = (r.mouse & ^uint32(0x00fff000)) | (mouseY << 12)
+	}
+}
+
+func (r *RISC) mouseButton(button int, down bool) {
+	if !(button >= 1 && button < 4) {
+		return
+	}
+
+	bit := uint32(1) << uint(27-button)
+	if down {
+		r.mouse |= bit
+	} else {
+		r.mouse &= ^bit
+	}
+}
+
+func (r *RISC) keyboardInput(scancodes []uint8) {
+	for _, c := range scancodes {
+		if len(r.keyBuf) == cap(r.keyBuf) {
+			break
+		}
+
+		r.keyBuf = append(r.keyBuf, c)
+	}
 }
 
 const (
