@@ -295,13 +295,13 @@ func (r *RISC) singleStep() {
 			panic("bug")
 		}
 
-		if (ir >> 27) & 0x1 != 0 {
+		if (ir>>27)&0x1 != 0 {
 			t = !t
 		}
 
 		if t {
 			if (ir & vbit) != 0 {
-				r.setRegister(15, r.PC * 4)
+				r.setRegister(15, r.PC*4)
 			}
 
 			if (ir & ubit) == 0 {
